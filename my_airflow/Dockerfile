@@ -7,6 +7,7 @@ RUN apt-get update && \
         build-essential \
         gcc \
         python3-dev \
+        ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Switch back to airflow user

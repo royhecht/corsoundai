@@ -56,7 +56,7 @@ def store_speech_to_s3(**kwargs):
     audio_path.replace('.wav', '.mp4') #file deleted after first use in tmp
     logging.info(f'audio_path:{audio_path},speech_time_ranges: {speech_time_ranges},video_id: {video_id}')
     for i, time_range in enumerate(speech_time_ranges):
-        start_ms, end_ms = time_range
+        start_ms, end_ms = time_range.values()
         file_name = f'speech_segment_{video_id}_{i}.wav'
         _cut_audio(audio_path, start_ms, end_ms, file_name)
         upload_to_s3(file_name)
@@ -71,8 +71,23 @@ def _cut_audio(input_audio_path, start_ms, end_ms, file_name):
 def upload_to_s3(file_name):
     s3_client = get_s3_client()
     try:
-        s3_client.upload_file(f'tmp/{file_name}', BUCKET_NAME, file_name)
+        s3_client.upload_file(f'tmp/{file_name}', BUCKET_NAME, f'segments/{file_name}')
         return True
     except Exception as e:
         print(f"Error uploading file to S3: {e}")
         return False
+
+
+# if __name__ == '__main__':
+#     args = {'params': {'video_id': 'BJKpUH2kJQg'}}
+#     video_path = download_video(**args)
+#     video_path =r'C:\Users\royhe\dev\corsoundai\my_airflow\my_funcs\tmp\BJKpUH2kJQg.mp4'
+#     audio_path = video_path.replace('.mp4', '.wav')
+#     _convert_video_to_audio(video_path, audio_path)
+#     ranges = VADProcessor(audio_path=audio_path).perform_vad()
+#     for i, time_range in enumerate(ranges):
+#         start_ms, end_ms = time_range.values()
+#         file_name = f'speech_segment_BJKpUH2kJQg_{i}.wav'
+#         _cut_audio(audio_path, start_ms, end_ms, file_name)
+#         upload_to_s3(file_name)
+
