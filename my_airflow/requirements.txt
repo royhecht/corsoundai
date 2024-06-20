@@ -1,0 +1,9 @@
+celery
+redis
+flower
+google-api-python-client
+boto3
+yt_dlp
+webrtcvad
+pydub
+moviepy

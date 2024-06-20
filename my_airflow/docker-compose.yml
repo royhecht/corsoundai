@@ -1,0 +1,130 @@
+version: "3"
+services:
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: my_airflow
+      MYSQL_USER: my_airflow
+      MYSQL_PASSWORD: airflow_password
+    ports:
+      - 3306:3306
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+
+  init-db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: [ "bash", "-c", "airflow db migrate && airflow users create \
+    --username admin \
+    --password admin \
+    --firstname First \
+    --lastname Last \
+    --role Admin \
+    --email admin@example.com" ]
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: webserver
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      mysql:
+        condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
+
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: scheduler
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    depends_on:
+      mysql:
+        condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
+
+
+  redis:
+    image: redis:latest
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery flower
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    depends_on:
+      - scheduler
+      - redis
+
+  celery-worker1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery worker
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    depends_on:
+      - scheduler
+      - redis
+
+  celery-worker2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery worker
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    depends_on:
+      - scheduler
+      - redis
+
+  celery-worker3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery worker
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    depends_on:
+      - scheduler
+      - redis
+
+
