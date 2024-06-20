@@ -3,8 +3,8 @@ import logging
 
 from airflow.operators.dagrun_operator import TriggerDagRunOperator
 
-from aws_login import get_s3_client
-from .constants import BUCKET_NAME
+from my_funcs.aws_login import get_s3_client
+from my_funcs.constants import BUCKET_NAME
 
 
 def read_s3_file(**kwargs):

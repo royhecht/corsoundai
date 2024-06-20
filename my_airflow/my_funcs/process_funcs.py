@@ -5,8 +5,8 @@ from pydub import AudioSegment
 from yt_dlp import YoutubeDL
 
 from constants import BUCKET_NAME
-from .aws_login import get_s3_client
-from .vad import VADProcessor
+from my_funcs.aws_login import get_s3_client
+from my_funcs.vad import VADProcessor
 
 
 def download_video(**kwargs):

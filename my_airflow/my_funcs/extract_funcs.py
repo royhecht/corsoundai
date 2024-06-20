@@ -5,7 +5,7 @@ from datetime import datetime
 import googleapiclient.discovery
 
 from aws_login import get_s3_client
-from .constants import MAX_RESULTS, API_KEY, BUCKET_NAME
+from my_funcs.constants import MAX_RESULTS, API_KEY, BUCKET_NAME
 
 
 def fetch_youtube_video_ids(**kwargs):
