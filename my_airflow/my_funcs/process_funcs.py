@@ -4,7 +4,7 @@ from moviepy.editor import VideoFileClip
 from pydub import AudioSegment
 from yt_dlp import YoutubeDL
 
-from constants import BUCKET_NAME
+from my_funcs.constants import BUCKET_NAME
 from my_funcs.aws_login import get_s3_client
 from my_funcs.vad import VADProcessor
 

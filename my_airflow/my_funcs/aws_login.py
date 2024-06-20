@@ -1,6 +1,6 @@
 import boto3
 
-from constants import REGION, ACCESS_KEY, SECRET_KEY
+from my_funcs.constants import REGION, ACCESS_KEY, SECRET_KEY
 
 
 def get_s3_client():

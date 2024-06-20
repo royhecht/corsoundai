@@ -4,7 +4,7 @@ from datetime import datetime
 
 import googleapiclient.discovery
 
-from aws_login import get_s3_client
+from my_funcs.aws_login import get_s3_client
 from my_funcs.constants import MAX_RESULTS, API_KEY, BUCKET_NAME
 
 
